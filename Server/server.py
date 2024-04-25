@@ -16,12 +16,12 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 # Initialize the DroneController
 drone_controller = DroneController(socketio=socketio)
 
-# Initialize HuskyController
-husky_controller = HuskyController()
+# # Initialize HuskyController
+# husky_controller = HuskyController()
 
 # Ensure HuskyController and DroneController cleanup is called on app exit
 atexit.register(drone_controller.cleanup)
-atexit.register(husky_controller.cleanup)
+# atexit.register(husky_controller.cleanup)
 
 
 @app.route('/')
@@ -181,46 +181,82 @@ def toggle_recording():
         # Handle any exceptions that occur during the toggle operation
         return jsonify({"success": False, "message": str(e)}), 500
 
-@app.route('/husky/move_forward', methods=['POST'])
-def husky_move_forward():
+@app.route('/enable_mission_pads', methods=['POST'])
+def enable_mission_pads():
     try:
-        husky_controller.move_forward()
-        return jsonify({"success": True, "message": "Husky moving forward"}), 200
+        drone_controller.detect_mission_pads()
+        return jsonify({"success": True, "message": "Mission pad detection enabled successfully."}), 200
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
 
-@app.route('/husky/move_backward', methods=['POST'])
-def husky_move_backward():
+@app.route('/navigate_to_mission_pad', methods=['POST'])
+def navigate_to_mission_pad():
     try:
-        husky_controller.move_backward()
-        return jsonify({"success": True, "message": "Husky moving backward"}), 200
+        drone_controller.navigate_to_mission_pad()
+        return jsonify({"success": True, "message": "Navigating to mission pad."}), 200
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
 
-@app.route('/husky/stop', methods=['POST'])
-def husky_stop():
+@app.route('/get_mission_pad_data', methods=['GET'])
+def get_mission_pad_data():
     try:
-        husky_controller.stop()
-        return jsonify({"success": True, "message": "Husky stopped"}), 200
+        pad_id, dist_x, dist_y, dist_z = drone_controller.get_mission_pad_data()
+        if pad_id == -1:
+            return jsonify({"success": True, "message": "No mission pad detected.", "data": None}), 200
+        else:
+            data = {
+                "pad_id": pad_id,
+                "dist_x": dist_x,
+                "dist_y": dist_y,
+                "dist_z": dist_z
+            }
+            return jsonify({"success": True, "message": "Mission pad data retrieved successfully.", "data": data}), 200
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
 
-@app.route('/husky/turn_left', methods=['POST'])
-def husky_turn_left():
-    try:
-        husky_controller.turn_left()
-        return jsonify({"success": True, "message": "Husky turning left"}), 200
-    except Exception as e:
-        return jsonify({"success": False, "message": str(e)}), 500
+###################################################################################################################################################
 
-@app.route('/husky/turn_right', methods=['POST'])
-def husky_turn_right():
-    try:
-        husky_controller.turn_right()
-        return jsonify({"success": True, "message": "Husky turning right"}), 200
-    except Exception as e:
-        return jsonify({"success": False, "message": str(e)}), 500
+# @app.route('/husky/move_forward', methods=['POST'])
+# def husky_move_forward():
+#     try:
+#         husky_controller.move_forward()
+#         return jsonify({"success": True, "message": "Husky moving forward"}), 200
+#     except Exception as e:
+#         return jsonify({"success": False, "message": str(e)}), 500
 
+# @app.route('/husky/move_backward', methods=['POST'])
+# def husky_move_backward():
+#     try:
+#         husky_controller.move_backward()
+#         return jsonify({"success": True, "message": "Husky moving backward"}), 200
+#     except Exception as e:
+#         return jsonify({"success": False, "message": str(e)}), 500
+
+# @app.route('/husky/stop', methods=['POST'])
+# def husky_stop():
+#     try:
+#         husky_controller.stop()
+#         return jsonify({"success": True, "message": "Husky stopped"}), 200
+#     except Exception as e:
+#         return jsonify({"success": False, "message": str(e)}), 500
+
+# @app.route('/husky/turn_left', methods=['POST'])
+# def husky_turn_left():
+#     try:
+#         husky_controller.turn_left()
+#         return jsonify({"success": True, "message": "Husky turning left"}), 200
+#     except Exception as e:
+#         return jsonify({"success": False, "message": str(e)}), 500
+
+# @app.route('/husky/turn_right', methods=['POST'])
+# def husky_turn_right():
+#     try:
+#         husky_controller.turn_right()
+#         return jsonify({"success": True, "message": "Husky turning right"}), 200
+#     except Exception as e:
+#         return jsonify({"success": False, "message": str(e)}), 500
+
+###################################################################################################################################################
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000, use_reloader=False)

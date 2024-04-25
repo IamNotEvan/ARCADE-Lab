@@ -1,9 +1,5 @@
-# import Tkinter to create our GUI.
-from tkinter import Tk, Label, Button, Frame
 # import openCV for receiving the video frames
 import cv2
-# make imports from the Pillow library for displaying the video stream with Tkinter.
-from PIL import Image, ImageTk
 # Import the tello module
 from djitellopy import tello
 # Import threading for our takeoff/land method
@@ -15,8 +11,6 @@ import time
 from datetime import datetime
 import os
 import base64
-from flask_socketio import SocketIO
-
 
 
 
@@ -35,6 +29,7 @@ class DroneController:
         self.is_connected = False  # Add this line
     #####################################################################################################################################
 
+    #####################################################################################################################################
     def toggle_recording(self):
         if self.recording:
             # Stop recording
@@ -52,6 +47,7 @@ class DroneController:
             fourcc = cv2.VideoWriter_fourcc(*'XVID')
             self.video_writer = cv2.VideoWriter(filepath, fourcc, 30.0, resolution)
             print("Recording started, saving to {filepath}.")
+    #####################################################################################################################################
 
     #####################################################################################################################################
     def connect_drone(self):
@@ -80,8 +76,7 @@ class DroneController:
     #####################################################################################################################################
 
 
-    ########################################################################################################################
-
+    #####################################################################################################################################
     def collect_surface_level_data(self):
         while self.collecting_data:
             distance = self.drone.get_distance_tof()
@@ -96,13 +91,7 @@ class DroneController:
         data_collection_thread = threading.Thread(target=wrapper)
         data_collection_thread.start()
 
-        # # This method starts the data collection in a separate thread
-        # self.collecting_data = True
-        # data_collection_thread = threading.Thread(target=self.collect_surface_level_data)
-        # data_collection_thread.start()
-
     
-
     def stop_collecting_surface_data(self):
         # This method stops the data collection
         self.collecting_data = False
@@ -124,8 +113,7 @@ class DroneController:
             return (320, 240)  # Adjust based on your cropping for the bottom camera
         else:
             return (720, 480)  # Full resolution for the front camera
-    #############################################################################
-
+    #####################################################################################################################################
 
     #####################################################################################################################################
     # This is for recording a video
@@ -297,3 +285,73 @@ class DroneController:
             print("Application closed successfully.")
     #####################################################################################################################################
 
+
+    #####################################################################################################################################
+    def detect_mission_pads(self):
+        # Enable mission pad detection
+        self.drone.enable_mission_pads()
+
+        # Set mission pad detection direction to both (0 for all directions)
+        self.drone.set_mission_pad_detection_direction(2)
+        print("Mission Pad detection Started!!!!!!!!!!!")
+
+
+    def navigate_to_mission_pad(self):
+        """
+        Navigates the drone towards the detected mission pad by adjusting its position
+        based on the X, Y, and Z distances to the mission pad.
+        """
+        pad_id = self.drone.get_mission_pad_id()
+        if pad_id == -1:
+            print("No mission pad detected.")
+            return
+
+        # Get distances from the mission pad
+        dist_x = self.drone.get_mission_pad_distance_x()
+        dist_y = self.drone.get_mission_pad_distance_y()
+        dist_z = self.drone.get_mission_pad_distance_z()
+
+        # Log the distances for debugging
+        print(f"Mission Pad {pad_id}: Distance X: {dist_x} cm, Y: {dist_y} cm, Z: {dist_z} cm")
+
+        # Adjust position to align with the mission pad
+        if dist_x > 20:  # Arbitrary threshold for movement
+            self.drone.move_left(dist_x)
+        elif dist_x < -20:
+            self.drone.move_right(abs(dist_x))
+        if dist_y > 20:
+            self.drone.move_back(dist_y)
+        elif dist_y < -20:
+            self.drone.move_forward(abs(dist_y))
+        # if dist_z > 20:
+        #     self.drone.move_down(dist_z)
+
+        self.drone.land()
+        
+        print(f"Drone is moving to align with Mission Pad {pad_id}.")
+
+
+    def get_mission_pad_data(self):
+        """
+        Returns the mission pad ID and the distances (X, Y, Z) from the drone to the mission pad.
+        If no mission pad is detected, returns -1 for the ID and None for the distances.
+
+        Returns:
+            tuple: A tuple containing the mission pad ID, and distances X, Y, and Z.
+        """
+        pad_id = self.drone.get_mission_pad_id()
+        if pad_id == -1:
+            # No mission pad detected
+            print("No mission pad detected.")
+            return pad_id, None, None, None
+
+        # Get distances from the mission pad
+        dist_x = self.drone.get_mission_pad_distance_x()
+        dist_y = self.drone.get_mission_pad_distance_y()
+        dist_z = self.drone.get_mission_pad_distance_z()
+
+        # Log the distances for debugging
+        print(f"Mission Pad {pad_id}: Distance X: {dist_x} cm, Y: {dist_y} cm, Z: {dist_z} cm")
+
+        return pad_id, dist_x, dist_y, dist_z
+    #####################################################################################################################################

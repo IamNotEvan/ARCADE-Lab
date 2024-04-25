@@ -9,7 +9,7 @@ class HuskyController:
     def __init__(self):
         self.ssh = paramiko.SSHClient()
         self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        self.ssh.connect('192.168.1.8', username='administrator', password='clearpath', timeout=10)
+        self.ssh.connect('192.168.1.10', username='administrator', password='clearpath', timeout=10)
         self.shell = self.ssh.invoke_shell()
         self.buff_size = 1024 # Buffer size for receiving output
 
