@@ -375,22 +375,35 @@
       // Function definitions for connectToDrone, takeSnapshot, toggleDataCollection, etc.
     
       return (
-          <div className="Drone">
-            <button onClick={connectToDrone}>Connect to Drone</button>
-            <button onClick={toggleRecording} disabled={!isDroneConnected}>
+          <div className="Drone" style={{align: 'center', position: 'absolute',bottom: 1, left:10, width: '900px'}}>
+            <img src={frameSrc} alt="Drone View" style={{ width: '900px', height: '675px'}} />
+            <h1 style={{textAlign: 'center'}}>Drone Controller</h1>
+            <div style={{marginBottom: '10px'}}>
+              <label htmlFor="batteryLevel">Battery Level: </label>
+              <input
+                type="text"
+                id="batteryLevel"
+                value={`${batteryLevel}%`}
+                readOnly
+              />
+            </div>
+            <button onClick={connectToDrone} style={{height: '50px'}}>Connect to Drone</button>
+            <button onClick={toggleRecording} disabled={!isDroneConnected} style={{height: '50px'}}>
               {isRecording ? 'Stop Recording' : 'Start Recording'}
             </button>         
-            <button onClick={takeSnapshot} disabled={!isDroneConnected}>Take a Snapshot</button>
-            <button onClick={toggleDataCollection} disabled={!isDroneConnected}>
+            <button onClick={takeSnapshot} disabled={!isDroneConnected} style={{height: '50px'}}>Take a Snapshot</button>
+            <button onClick={toggleDataCollection} disabled={!isDroneConnected} style={{height: '50px'}}>
               {isCollecting ? 'Stop Collecting Data' : 'Start Collecting Data'}
             </button>
-            <button onClick={toggleTakeoffLand} disabled={!isDroneConnected}>Take Off / Land</button>
-            <button onClick={changeCameraDirection} disabled={!isDroneConnected}>Change Camera Direction</button>
-            <button onClick={toggleGraph} disabled={!isDroneConnected}>{showGraph ? 'Hide Data Graph' : 'Show Data Graph'}</button>
+            <button onClick={toggleTakeoffLand} disabled={!isDroneConnected} style={{height: '50px'}}>Take Off / Land</button>
+            <button onClick={changeCameraDirection} disabled={!isDroneConnected} style={{height: '50px'}}>Change Camera Direction</button>
+            <button onClick={toggleGraph} disabled={!isDroneConnected} style={{height: '50px'}}>{showGraph ? 'Hide Data Graph' : 'Show Data Graph'}</button>
             {showGraph && <GraphPopup data={collectedData} toggleGraph={toggleGraph} />}
-            <button onClick={enableMissionPad} disabled={!isDroneConnected}>Enable Mission Pad</button>
-            <button onClick={getMissionPadData} disabled={!isDroneConnected}>Mission Pad Data</button>
-            <button onClick={navigateToMissionPad} disabled={!isDroneConnected}>Navigate to Mission Pad</button>
+            <div style={{display: 'flex', justifyContent: 'center'}}>
+              <button onClick={enableMissionPad} disabled={!isDroneConnected} style={{height: '50px'}}>Enable Mission Pad</button>
+              <button onClick={getMissionPadData} disabled={!isDroneConnected} style={{height: '50px'}}>Mission Pad Data</button>
+              <button onClick={navigateToMissionPad} disabled={!isDroneConnected} style={{height: '50px'}}>Navigate to Mission Pad</button>
+            </div>
             {missionPadData.id !== null && (
               <div>
                 <h3>Mission Pad Data:</h3>
@@ -400,19 +413,19 @@
                 <p>Z Distance: {missionPadData.z} cm</p>
               </div>
             )}
-            <h1>Drone Controller</h1>
-            <div>
-              <label htmlFor="batteryLevel">Battery Level: </label>
-              <input
-                type="text"
-                id="batteryLevel"
-                value={`${batteryLevel}%`}
-                readOnly
-              />
-              <img src={frameSrc} alt="Drone View" style={{ width: '720px', height: '480px' }} />
+
+            <div style={{display: 'flex', justifyContent: 'center', textAlign: 'center'}}>
+              <h3 style={{fontFamily: 'monospace', whiteSpace: 'pre' }}>
+                &nbsp;&nbsp;&nbsp;W - Move Tello Up                    Arrow Up    - Move Tello Forward<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;S - Move Tello Down                  Arrow Down  - Move Tello Backward<br />
+                A - Rotate Tello Counter-Clockwise   Arrow Left  - Move Tello Left<br />
+                &nbsp;D - Rotate Tello Clockwise           Arrow Right - Move Tello Right<br />
+              </h3>
             </div>
+          
           </div>
         );
   }
     
     export default Drone;
+

@@ -41,15 +41,15 @@ const HuskyControl = () => {
 
     return (
         <div>
-            <h1>Husky UGV Controller</h1>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <button onClick={() => sendCommand('forward')} style={{ marginBottom: '20px' }}>↑ Forward</button>
+            <h1 style={{align: 'center', position: 'absolute',bottom: 265, right: 300}}>Husky UGV Controller</h1>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'absolute',bottom: 15, right: 200}}>
+                <button onClick={() => sendCommand('forward')} style={{ marginBottom: '10px', width: '150px', height: '75px'}}>↑ Forward</button>
                 <div>
-                    <button onClick={() => sendCommand('left')} style={{ marginRight: '20px' }}>← Left</button>
-                    <button onClick={() => sendCommand('stop')} style={{ margin: '0 20px' }}>■ Stop</button> {/* Added Stop button */}
-                    <button onClick={() => sendCommand('right')}>Right →</button>
+                    <button onClick={() => sendCommand('left')} style={{ marginRight: '10px', width: '150px', height: '75px' }}>← Left</button>
+                    <button onClick={() => sendCommand('stop')} style={{ margin: '10px', backgroundColor: '#F40009', width: '150px', height: '75px'}}>■ Stop</button>
+                    <button onClick={() => sendCommand('right')} style={{ marginLeft: '10px', width: '150px', height: '75px'}}>Right →</button>
                 </div>
-                <button onClick={() => sendCommand('backward')} style={{ marginTop: '20px' }}>↓ Backward</button>
+                <button onClick={() => sendCommand('backward')} style={{ marginTop: '10px', width: '150px', height: '75px'}}>↓ Backward</button>
             </div>
         </div>
     );
